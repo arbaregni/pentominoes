@@ -65,6 +65,31 @@ impl CellShape {
     pub fn filled_tiles(&self) -> impl Iterator<Item = Coord> + '_ {
         self.tiles.iter().copied()
     }
+    // Returns the maximum x and y
+    pub fn max(&self) -> Coord {
+        let max_x = self.tiles.iter().map(|c| c.x).max().unwrap_or(0);
+        let max_y = self.tiles.iter().map(|c| c.y).max().unwrap_or(0);
+        Coord::new(max_x, max_y)
+    }
+    pub fn print_out(&self) {
+        const FILLED: char = '█';
+        const EMPTY: char = ' ';
+
+        let max = self.max();
+        for y in 0..=max.y {
+            print!("  ");
+            for x in 0..=max.x {
+
+                let ch = match self[Coord::new(x,y)] {
+                    Tile::Filled => FILLED,
+                    Tile::Empty => EMPTY,
+                };
+                print!("{}", ch);
+
+            }
+            println!();
+        }
+    }
 }
 
 impl std::ops::Index<Coord> for CellShape {

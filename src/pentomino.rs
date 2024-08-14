@@ -1,8 +1,10 @@
+use std::collections::HashSet;
+
 use crate::cell_shape::{Tile, CellShape};
-use crate::transform::Transform;
+use crate::transform::{Transform, RIGID_SYMMETRIES};
 
 #[derive(Debug, Copy, Clone)]
-pub enum Pentamino {
+pub enum Pentomino {
     F,
     I,
     L,
@@ -17,81 +19,103 @@ pub enum Pentamino {
     Z,
 }
 
-impl Pentamino {
-    /// Returns a representative tile grid for this pentamino. 
-    pub fn tile_grid(self) -> CellShape {
+pub const PENTOMINOES: [Pentomino; 12] = [
+    Pentomino::F,
+    Pentomino::I,
+    Pentomino::L,
+    Pentomino::N,
+    Pentomino::P,
+    Pentomino::T,
+    Pentomino::U,
+    Pentomino::V,
+    Pentomino::W,
+    Pentomino::X,
+    Pentomino::Y,
+    Pentomino::Z,
+];
+
+impl Pentomino {
+    /// Returns all possible orientations for this pentamino 
+    pub fn shapes(self) -> HashSet<CellShape> {
         use Tile::{
             Empty as o,
             Filled as F,
         };
-        match self {
-            Pentamino::F => CellShape::from_2darray([
+        // Get a representative shape for the pentamino
+        let rep = match self {
+            Pentomino::F => CellShape::from_2darray([
                 [o, F, F],
                 [F, F, o],
                 [o, F, o],
             ]),
-            Pentamino::I => CellShape::from_2darray([
+            Pentomino::I => CellShape::from_2darray([
                 [F],
                 [F],
                 [F],
                 [F],
                 [F],
             ]),
-            Pentamino::L => CellShape::from_2darray([
+            Pentomino::L => CellShape::from_2darray([
                 [F, o],
                 [F, o],
                 [F, o],
                 [F, F],
             ]),
-            Pentamino::N => CellShape::from_2darray([
+            Pentomino::N => CellShape::from_2darray([
                 [F, o],
                 [F, F],
                 [o, F],
                 [o, F],
             ]),
-            Pentamino::P => CellShape::from_2darray([
+            Pentomino::P => CellShape::from_2darray([
                 [F, F],
                 [F, F],
                 [F, o],
             ]),
-            Pentamino::T => CellShape::from_2darray([
+            Pentomino::T => CellShape::from_2darray([
                 [F, F, F],
                 [o, F, o],
                 [o, F, o],
             ]),
-            Pentamino::U => CellShape::from_2darray([
+            Pentomino::U => CellShape::from_2darray([
                 [F, o, F],
                 [F, F, F],
             ]),
-            Pentamino::V => CellShape::from_2darray([
+            Pentomino::V => CellShape::from_2darray([
                 [F, o, o],
                 [F, o, o],
                 [F, F, F],
             ]),
-            Pentamino::W => CellShape::from_2darray([
+            Pentomino::W => CellShape::from_2darray([
                 [F, o, o],
                 [F, F, o],
                 [o, F, F],
             ]),
-            Pentamino::X => CellShape::from_2darray([
+            Pentomino::X => CellShape::from_2darray([
                 [o, F, o],
                 [F, F, F],
                 [o, F, o],
             ]),
-            Pentamino::Y => CellShape::from_2darray([
+            Pentomino::Y => CellShape::from_2darray([
                 [F, o],
                 [F, F],
                 [F, o],
                 [F, o],
             ]),
-            Pentamino::Z => CellShape::from_2darray([
+            Pentomino::Z => CellShape::from_2darray([
                 [F, F, o],
                 [o, F, o],
                 [o, F, F],
             ]),
-        }
+        };
+        create_all_orientations(rep, RIGID_SYMMETRIES.as_slice())
     }
+}
 
-
-
+// Creates all unique orientations of a given shape and transforms
+fn create_all_orientations(rep: CellShape, symmetries: &[Transform]) -> HashSet<CellShape> {
+    symmetries
+        .iter()
+        .map(|t| t.transform_shape(rep.clone()))
+        .collect()
 }

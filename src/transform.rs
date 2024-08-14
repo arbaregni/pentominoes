@@ -6,7 +6,8 @@ pub struct Transform {
     elems: [[isize; 3]; 3]
 }
 
-const RIGID_SYMMETRIES: [Transform; 8] = [
+// There are 8 rigid symmetries (Dihedral group with 8 elements)
+pub const RIGID_SYMMETRIES: [Transform; 8] = [
     Transform::identity(),
     Transform::mirror_horizontal(),
     Transform::mirror_vertical(),
